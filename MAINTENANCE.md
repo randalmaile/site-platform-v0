@@ -124,6 +124,35 @@ If more than one project writes the same extension, it belongs in the template.
 
 *Last checked: 2026-08-26 — no dynamic routes exist yet.*
 
+### 5. `block:add` answers the shadcn overwrite prompt through stdin
+
+`starter/base/scripts/add-block.mjs`
+
+The wrapper never lets an install rewrite a file the project owns. It snapshots
+the protected set, runs the CLI, and restores anything that changed — that pass
+is the guarantee. The awkward part is the prompt: shadcn 4.19.0 has no "no to
+all" flag. `--overwrite` is yes-to-all, and its absence means one interactive
+confirm per conflicting file. So the child gets a stdin of bare newlines and
+each confirm takes its default, which is no.
+
+Closing stdin instead does not work: the aborted prompt takes the rest of the
+install with it and the requested block never lands. Verified 2026-08-26 against
+4.19.0.
+
+**Trigger:** a released flag meaning non-interactive or no-overwrite writes. The
+CLI already has the code path — `updateFiles()` skips conflicts outright when
+its internal `interactive` option is false, it is just not reachable from the
+command line. When it is, drop the stdin feed and keep the restore pass.
+
+**Risk of waiting:** low. The feed only matters if the confirm's default ever
+flips to yes, and protected files are restored either way.
+
+```bash
+cd starter/base && npx shadcn add --help   # a no-overwrite flag yet?
+```
+
+*Last checked: 2026-08-26 — no such flag in 4.19.0.*
+
 ---
 
 ## Current pins

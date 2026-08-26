@@ -25,19 +25,64 @@ registry and 404s. Shadcnblocks is a paid registry and needs
 `SHADCNBLOCKS_API_KEY` in your environment.
 
 The wrapper runs the pinned local shadcn CLI, files each item by the registry it
-came from, repairs imports that pointed at the old path, and warns loudly if
-`globals.css` changed during the install — the CLI has overwritten themes
-before.
+came from, and repairs imports that pointed at the old path.
+
+**It only ever adds.** Registry items ship their own `utils.ts`, their own
+theme, their own `components.json`, and the CLI will write all three given the
+chance. These are snapshotted before the install and put back byte-for-byte
+after it:
+
+```text
+src/lib/utils.ts        src/app/globals.css     components.json
+keystatic.config.ts     CLAUDE.md               AGENTS.md
+```
+
+Every file **already** in `src/components/ui/` is protected the same way — a
+primitive that is missing still installs normally, one that exists is never
+rewritten. `--overwrite` is refused outright.
+
+So an install can bring in a new block, a missing primitive and its
+dependencies, and cannot quietly replace a decision the project already made.
+Two things follow from that:
+
+- A `skipped` line in the CLI's output for one of those files is the guard
+  working. Its suggestion to rerun with `--overwrite` does not apply here.
+- The CLI may still ask `The file utils.ts already exists. Would you like to
+  overwrite?` — it has no flag for "no to all". The answer is submitted for you
+  and it is always no; nothing waits for input.
 
 **Install only what something needs now.** No preinstalled catalog.
 
 ---
 
+## Updating a protected file
+
+Taking a registry's version of `utils.ts`, the theme, or a primitive that is
+already installed is maintenance, not an install. It changes something the whole
+project depends on, so it is a deliberate change of its own — not a side effect
+of adding a hero section.
+
+```bash
+npx shadcn add --diff @shadcn/<item>     # what would the registry write?
+```
+
+Read the diff, apply the parts you actually want by hand, run `npm run verify`,
+and commit that change on its own. If you genuinely want the registry's file
+wholesale, delete the local one first and install it — a missing file is not
+protected.
+
+There is no flag for this. `--overwrite` is refused, and adding one back would
+put the theme and the utils helper one keystroke away from a silent rewrite.
+
+---
+
 ## Normalizing a block
 
-Registry source lands in `src/components/shadcnblocks/`. It is never edited:
-`block:add` overwrites that directory on update, so any fix made there is
-thrown away, and the untouched copy is what an adaptation gets compared against.
+Registry source lands in `src/components/shadcnblocks/`. It is never edited: the
+untouched copy is what an adaptation gets compared against, and edits made there
+are invisible to the project — nothing renders from that directory. `block:add`
+will not overwrite a file already in it, so refreshing a block means deleting
+that file and reinstalling.
 
 ```text
 select a block for a content/UX reason

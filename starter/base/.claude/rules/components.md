@@ -22,6 +22,11 @@ miscellaneous project components — those go in `layout/` or a domain folder.
 - Use `npm run block:add -- @shadcnblocks/<name>` or `@shadcn/<name>`. Every
   item needs its registry prefix.
 - Install only primitives something actually needs. Do not preinstall a catalog.
+- `block:add` only adds. `src/lib/utils.ts`, `src/app/globals.css`,
+  `components.json`, `keystatic.config.ts`, `CLAUDE.md`, `AGENTS.md` and every
+  primitive already in `src/components/ui/` are never rewritten by an install,
+  and `--overwrite` is refused. Taking a registry's version of one of them is a
+  deliberate maintenance change of its own — see the workflow.
 - Review what a block dragged in with it. A dependency stays only when its value
   exceeds the complexity it adds — say so explicitly before keeping a large one.
 

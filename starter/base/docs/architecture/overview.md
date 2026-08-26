@@ -30,8 +30,7 @@ the filesystem disagree.
 
 **Why it exists.** A page added under `src/app/(site)` without a registry entry
 is invisible to the sitemap: it ships, and nothing ever points a crawler at it.
-A registry entry with no page is the mirror failure — the sitemap advertises a
-404. Neither is caught by lint, types or the build.
+A registry entry with no page is the mirror failure — the sitemap advertises a 404. Neither is caught by lint, types or the build.
 
 The list is explicit rather than crawled, because a page existing on disk is not
 the same as a page being intended. Writing both down makes the disagreement
@@ -47,6 +46,8 @@ they are framework surface, not public information architecture.
 ---
 
 ## Boundary 2 — content
+
+React owns the website; Keystatic owns editable content. src/lib/content is the narrow doorway between them.
 
 ```text
 route / server component
@@ -93,10 +94,12 @@ src/components/<domain>/      components tied to a domain concept
 
 The split between `shadcnblocks/` and `normalized/` is the useful one: keeping
 an untouched copy of what the registry actually shipped means an adaptation can
-always be compared against its origin, and `npm run block:add` can update the
-source without destroying project work.
+always be compared against its origin. `npm run block:add` only ever adds — it
+will not rewrite a file that already exists, so refreshing registry source is a
+deliberate delete-and-reinstall rather than something an unrelated install does
+to project work.
 
-`normalized/` means *adapted external source*, not *miscellaneous components*.
+`normalized/` means _adapted external source_, not _miscellaneous components_.
 
 Nothing lives loose at the root of `src/components/`.
 
@@ -115,9 +118,9 @@ See [`../deployment/status.md`](../deployment/status.md).
 
 ## Configuration vs content
 
-| Who changes it | Where it lives |
-| --- | --- |
-| An editor | Keystatic → `content/` |
+| Who changes it           | Where it lives                           |
+| ------------------------ | ---------------------------------------- |
+| An editor                | Keystatic → `content/`                   |
 | An operator or developer | `src/config/` or an environment variable |
 
 Site name, description and SEO defaults are editorial. The canonical origin is
