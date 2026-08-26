@@ -37,16 +37,23 @@ repository content
       ↓
 commit
       ↓
-normal deployment pipeline
+runtime content refresh or deployment pipeline
 ```
 
 Editors using GitHub mode require appropriate write access to the repository.
+
+The deployed editor must be configured with both the repository and, when the
+application is not at the repository root, the application path prefix. A save
+that reaches the wrong same-named path is a failed integration even if GitHub
+accepted the commit.
 
 This is an intentional V0 tradeoff because the platform is aimed initially at developer-managed sites and small organizations where Git-backed content provides a simple, inspectable source of truth.
 
 ## Local development
 
-Local mode may be used temporarily during initial development, debugging, migrations, or isolated experimentation.
+The base defaults to local mode under `npm run dev`, where Keystatic reads and
+writes the checked-out `content/` directory. Local development must not require
+production GitHub or Cloudflare credentials.
 
 However, generated projects should be configured and documented with **GitHub mode as the intended deployed editing workflow**.
 
@@ -605,8 +612,9 @@ The CMS should make AI-generated content easy to inspect and edit rather than hi
 
 A project using GitHub mode must document:
 
-- repository owner/name configuration
-- required environment variables
+- editor repository and path-prefix configuration
+- runtime content-reader repository, ref, and path-prefix configuration
+- which values are public build configuration and which are runtime secrets
 - Keystatic authentication setup
 - editor repository permissions
 - local development expectations
@@ -615,6 +623,10 @@ A project using GitHub mode must document:
 - content commit behavior
 
 These operational details belong in project/deployment documentation and must not leak into presentation components.
+
+The public content reader and Keystatic GitHub storage are separate
+integrations. They may use different credentials and configuration paths;
+proving one does not prove the other.
 
 ---
 
@@ -627,11 +639,12 @@ Before a deployment adapter is declared supported for the platform, verify the c
 □ /keystatic loads
 □ GitHub authentication succeeds
 □ authorized editor can open content
+□ editor opens the intended repository path
 □ content can be changed
 □ image/file upload works when enabled
 □ save creates/updates repository content
-□ commit reaches GitHub
-□ normal build/deployment sees the change
+□ commit reaches the intended GitHub path
+□ runtime content refresh or deployment sees the change
 □ public site renders the updated content
 ```
 

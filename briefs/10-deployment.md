@@ -53,7 +53,7 @@ STANDARD NEXT.JS APPLICATION
     CLOUDFLARE WORKERS
           │
           ├── vinext
-          │     preferred new-project candidate
+          │     proven V0 default
           │
           └── OpenNext
                 fallback when compatibility requires it
@@ -65,9 +65,11 @@ Do not spread adapter-specific imports through application code.
 
 # 4. vinext policy
 
-For new projects, test vinext first.
+For new projects, start with vinext and test the resulting project rather than
+assuming the neutral base proves every later dependency or route.
 
-Before adoption, run the compatibility check:
+Before the first deployment, and after material framework or application
+changes, run the compatibility check:
 
 ```bash
 npx vinext check
@@ -190,28 +192,23 @@ Independent repositories should remain independently deployable.
 
 # 10. Environment variables
 
-Every generated project should provide:
+Every generated project must provide:
 
 ```text
 .env.example
 ```
 
-with variable names and explanatory comments where useful.
+with variable names and explanatory comments where useful. The file must
+distinguish public build configuration from runtime secrets and must cover both
+the public content reader and Keystatic GitHub editing.
 
 Never commit actual credentials or secrets.
 
 Runtime secrets should live in the appropriate deployment/GitHub secret configuration.
 
-For Keystatic GitHub mode, project documentation should account for values such as:
-
-```text
-KEYSTATIC_GITHUB_CLIENT_ID
-KEYSTATIC_GITHUB_CLIENT_SECRET
-KEYSTATIC_SECRET
-NEXT_PUBLIC_KEYSTATIC_GITHUB_APP_SLUG
-```
-
-Names must follow the current Keystatic integration requirements.
+Exact variable names and setup commands belong in `.env.example` and the
+project deployment runbook, not in this contract. Applications below the
+repository root must configure matching path prefixes for reading and editing.
 
 ---
 
@@ -236,7 +233,7 @@ save writes repository content
     ↓
 GitHub commit/update
     ↓
-    runtime content refresh or deployment rebuild
+runtime content refresh or deployment rebuild
     ↓
 updated public site
 ```
@@ -247,7 +244,7 @@ The platform should not claim an adapter is proven until this path works end-to-
 
 # 12. Keystatic deployment acceptance test
 
-For the first reference project, verify:
+Before a generated project is treated as production-ready, verify:
 
 ```text
 □ npm run dev works normally
@@ -266,13 +263,15 @@ For the first reference project, verify:
 
 □ authorized editor can access content
 
+□ editor opens the intended repository path
+
 □ structured content can be edited
 
 □ Markdown content can be edited when enabled
 
 □ image upload works when enabled
 
-□ save creates/updates repository content
+□ save creates/updates the intended repository content
 
 □ content reaches GitHub
 

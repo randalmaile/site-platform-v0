@@ -225,7 +225,7 @@ upgrades as deliberate platform maintenance. This is what `starter/base` is on.
 | `@keystatic/core` | 0.6.9 | 0.6.9 | current |
 | `@keystatic/next` | 5.0.5 | 5.0.5 | current |
 | `shadcn` | 4.19.0 | 4.19.0 | current; pinned so `block:add` cannot drift |
-| `vinext` | ^1.0.0-beta.8 | 1.0.0-beta.8 | under validation — open item 3; caret, not pinned |
+| `vinext` | ^1.0.0-beta.8 | 1.0.0-beta.8 | proven for base; beta watch — open item 3 |
 | `wrangler` | ^4.126.0 | 4.126.0 | adapter tooling, not application code |
 
 *Table verified 2026-08-26. It goes stale on its own — re-run

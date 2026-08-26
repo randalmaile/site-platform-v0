@@ -270,13 +270,18 @@ Cloudflare is the default target, but application/domain code must not assume Cl
 
 Provider-specific concerns belong in deployment configuration and thin adapters only.
 
-The exact V0 Cloudflare adapter is defined in `10-deployment.md` after compatibility is validated with:
+vinext is the proven V0 adapter for the base. Its acceptance result, fallback
+policy, and project-level revalidation requirements are defined in
+`10-deployment.md`. The validation covers:
 
 - Next.js 16
 - Keystatic admin
 - Keystatic write/publish workflow
-- image behavior
+- image behavior when enabled by a project
 - production deployment
+
+OpenNext remains a fallback for a generated project that demonstrates a
+material vinext incompatibility. Adapter selection must remain evidence-based.
 
 Do not spread Workers-specific APIs into content, components, routing, or domain logic.
 

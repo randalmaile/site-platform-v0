@@ -8,8 +8,8 @@ Do not conflate the two roles: here you change what every future site inherits.
 ## What is here
 
 ```text
-briefs/        architectural contracts — authoritative
-prompts/       handoff prompts for milestone work
+briefs/        durable architectural contracts — authoritative
+prompts/       temporary handoffs for unfinished milestone work
 starter/base/  the neutral base application every generated site starts from
 MAINTENANCE.md what the platform is waiting on — deferred decisions and pins
 ```
@@ -19,6 +19,11 @@ MAINTENANCE.md what the platform is waiting on — deferred decisions and pins
 - **The briefs win.** `briefs/01`–`11` are contracts, not suggestions. If a prompt, a reference
   project, or a framework convention disagrees with a brief, the brief is right. If a brief is
   wrong, say so and change the brief — do not quietly diverge in code.
+- **The starter is executable evidence.** A mismatch between a brief and `starter/base` is a defect,
+  not permission to pick the convenient source. Decide which side is wrong, update it explicitly,
+  and verify the result. See `briefs/README.md` for source ownership.
+- **Prompts expire.** They are implementation handoffs, never architecture or documentation. Remove
+  a completed prompt from the active `prompts/` directory; Git history is the archive.
 - **`starter/base` is a template, not a site.** It must contain no organization, audience, sitemap,
   brand, palette, typeface, imagery, CTA, or finished page design. Those are decisions the eventual
   project owner makes. See `briefs/01-platform-foundation.md` §14 for the exclusion list.

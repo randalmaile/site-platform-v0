@@ -1,50 +1,51 @@
-# Site Platform V0 — Initial Specification Pack
+# Site Platform V0
 
-This package contains the first implementation-ready specifications for the reusable site platform.
+This repository is the generation system for small, independently owned
+websites. It contains the platform contracts and the neutral application that
+future projects inherit; it is not itself a finished website.
 
-## Included
+## Current state
 
-- `briefs/01-platform-foundation.md` — stable technical foundation and exclusions
-- `briefs/02-project-structure.md` — canonical file ownership, boundaries, and workflows
-- `briefs/04-design-system.md` — neutral reusable design-system architecture
-- `prompts/create-base-starter.md` — Claude Code handoff for Milestone 1
+Milestone 1 is complete:
 
-## Current milestone
+- the neutral Next.js base lives in [`starter/base/`](starter/base/);
+- the eleven V0 architecture briefs are accepted;
+- Cloudflare Workers deployment through vinext has passed the base's full
+  Keystatic GitHub-mode editing acceptance test;
+- no product profile, audience, sitemap, brand, or finished page design has
+  been added.
 
-Build a neutral, working `starter/base` application before adding the Student Organization profile.
+Start with [`starter/base/README.md`](starter/base/README.md) to run or extend
+the application.
 
-The base intentionally contains no student-organization sitemap, domain collections, branding, CTA strategy, or finished design.
+## Repository map
 
-## Next specifications
+| Path | Purpose |
+| --- | --- |
+| [`briefs/`](briefs/) | Durable platform contracts and their source-of-truth rules |
+| [`starter/base/`](starter/base/) | Executable neutral template inherited by generated sites |
+| [`prompts/`](prompts/) | Temporary handoffs for unfinished milestones; currently none |
+| [`MAINTENANCE.md`](MAINTENANCE.md) | Open pins, deferrals, and evidence-based retest triggers |
 
-After the base implementation is reviewed:
+The briefs define intent, the starter and its verification commands provide
+executable evidence, starter documentation explains operation, and prompts
+expire when their milestone is complete. See [`briefs/README.md`](briefs/README.md)
+for the full hierarchy.
 
-1. `03-content-architecture.md`
-2. `06-keystatic.md`
-3. `07-seo.md`
-4. `08-accessibility.md`
-5. `09-testing.md`
-6. `10-deployment.md`
-7. `11-ai-governance.md`
-8. `profiles/student-organization.md`
-9. profile application / project-creation prompt
+## Verify the base
 
+```bash
+cd starter/base
+npm install
+npm run verify
+```
 
-## V0 brief status
+Cloudflare runtime verification is intentionally separate from the normal
+Next.js completion gate. Its commands and environment requirements are in
+[`starter/base/docs/deployment/status.md`](starter/base/docs/deployment/status.md).
 
-Milestone 1 architecture briefs are complete:
+## Next platform work
 
-- 01 Platform Foundation
-- 02 Project Structure
-- 03 Content Architecture
-- 04 Design System
-- 05 Component Strategy
-- 06 Keystatic
-- 07 SEO
-- 08 Accessibility
-- 09 Testing
-- 10 Deployment
-- 11 AI Governance
-
-Milestone 1 is implemented: the neutral base application lives at [`starter/base/`](starter/base/).
-Start there with `starter/base/README.md`.
+Add a profile or project-creation workflow only when its product requirements
+are known. Do not add speculative capabilities to the base in anticipation of
+future sites.

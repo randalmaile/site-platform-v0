@@ -112,10 +112,14 @@ starter/base/
 ├── package-lock.json
 ├── package.json
 ├── postcss.config.mjs
-└── tsconfig.json
+├── tsconfig.json
+├── vite.config.ts
+└── wrangler.jsonc
 ```
 
-Provider-specific deployment files may be added once the Cloudflare adapter is selected.
+`vite.config.ts` and `wrangler.jsonc` own the vinext/Cloudflare deployment
+boundary. Provider mechanics must remain in configuration and server-side
+integration code rather than spreading into application components.
 
 ## 3. `src/app/`
 
