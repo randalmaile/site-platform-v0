@@ -8,7 +8,10 @@ Cloudflare Workers is the default deployment target for Site Platform V0.
 
 The application must remain a normal Next.js application, with Cloudflare-specific mechanics isolated behind a deployment boundary.
 
-For new Next.js projects, **vinext is the preferred Cloudflare candidate**, but it does not become the platform's proven default until the full Keystatic GitHub-mode editing workflow passes the deployment acceptance test.
+For the V0 base, **vinext is the proven Cloudflare default**. Version
+1.0.0-beta.8 passed the full Keystatic GitHub-mode editing workflow on
+26 August 2026. Generated projects must still re-run compatibility and
+acceptance checks after adding project-specific routes and dependencies.
 
 OpenNext remains the supported fallback when vinext compatibility is insufficient.
 
@@ -74,9 +77,9 @@ If compatibility is acceptable, initialize/configure vinext according to current
 
 The existing Next.js development workflow must remain usable.
 
-vinext is currently treated as:
+For the V0 base, vinext is treated as:
 
-> **preferred candidate, pending project compatibility**
+> **proven default, subject to project compatibility**
 
 not:
 
@@ -233,7 +236,7 @@ save writes repository content
     ↓
 GitHub commit/update
     ↓
-deployment rebuild
+    runtime content refresh or deployment rebuild
     ↓
 updated public site
 ```
@@ -273,7 +276,7 @@ For the first reference project, verify:
 
 □ content reaches GitHub
 
-□ deployment rebuild occurs
+□ runtime content refresh or deployment rebuild occurs, as configured
 
 □ updated content appears publicly
 ```

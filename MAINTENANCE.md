@@ -78,37 +78,90 @@ cd starter/base && npm i -D typescript@7 && npm run verify
 
 *Last checked: 2026-08-26 — not attempted, deferred by choice.*
 
-### 3. No deployment adapter selected
+### 3. vinext is proven for the base but remains a beta dependency
 
 `starter/base/docs/deployment/status.md` holds the detail.
 
-`npx vinext check` reported 85% on 2026-08-25 with two mechanical findings, both
-auto-fixed by `vinext init`. Nothing architectural.
+vinext 1.0.0-beta.8 builds and deploys the base, serves repository content from
+GitHub, and passed the full deployed Keystatic GitHub-mode workflow: OAuth,
+content loading, save, GitHub commit and live public rendering. It is the proven
+V0 default for this base. The dependency is still a beta and project-specific
+features can introduce compatibility gaps that the neutral base does not cover.
 
-**Why that is not enough to adopt it.** The checker scans imports, libraries and
-file structure. It never exercises the Keystatic admin bundle, which brief 10
-§11 makes the deciding factor. An adapter is not proven until the full
-GitHub-mode editing workflow passes end to end — deploy, `/keystatic` loads,
-auth, edit, commit, rebuild, content appears publicly.
-
-**Blocked on:** Cloudflare credentials and a configured Keystatic GitHub App.
-It is a human acceptance test.
-
-Related: the base ships `keystatic.config.ts` with `storage: { kind: "local" }`
-so a fresh clone works with no setup. GitHub mode is the intended *deployed*
-workflow and is what the acceptance test proves. OpenNext remains the documented
-fallback if vinext fails on demonstrated need — not on preference.
+**Trigger:** a vinext upgrade, a Next.js upgrade, or a generated project adding
+material routes/dependencies. Re-run the compatibility check and full deployed
+acceptance test; use OpenNext only if that evidence reveals a critical gap.
 
 ```bash
-cd starter/base && npx vinext check     # re-run against a real project, not the base
+cd starter/base && npm run build:vinext && npm run start:vinext   # then GET /
 ```
 
-The base is nearly empty, so its score will move as routes, images and
-dependencies arrive. Re-check before adopting.
+OpenNext remains the documented fallback, but nothing found so far argues for
+it: the two expensive failures belong to Workers and to Keystatic, and OpenNext
+would hit both identically.
 
-*Last checked: 2026-08-25 — 85%, acceptance test not run.*
+*Last checked: 2026-08-26 — full deployed editing workflow passed.*
 
-### 4. Route guard handles static routes only
+### 4. Keystatic's GitHub reader sends no `User-Agent`
+
+`starter/base/src/lib/content/reader.ts`
+
+GitHub's REST API answers `403 Request forbidden by administrative rules` to any
+request without a `User-Agent`. `createGitHubReader` sets no such header and
+offers no way to add one. Node's `fetch` supplies a default, so this is
+invisible in development and in any Node deployment; `workerd`'s does not, so
+every content read fails in a Worker.
+
+`reader.ts` wraps `fetch` for `api.github.com` and `raw.githubusercontent.com`
+only, filling the header in when absent. It is re-asserted before each read
+rather than installed once, because vinext replaces `globalThis.fetch` on the
+first request with a wrapper that delegates to the `fetch` it captured at
+startup — so a module-scope patch is discarded before it is ever used. That
+second half is the part worth remembering: **a userland `globalThis.fetch` patch
+does not survive vinext**, whatever it is for.
+
+**Trigger:** either upstream fix closes this. Keystatic sending its own
+`User-Agent` removes the need entirely; vinext capturing `globalThis.fetch`
+lazily would at least let the wrapper be installed once at module scope.
+
+**Risk of waiting:** low, but the wrapper is a global mutation and that is
+exactly the kind of thing that rots quietly. It is narrow — two hosts, one
+absent header, delegating to whatever `fetch` is current — and it is confined to
+the file that already owns Keystatic's mechanics.
+
+```bash
+grep -n "user-agent" starter/base/node_modules/@keystatic/core/dist/keystatic-core-reader-github.worker.js
+```
+
+*Last checked: 2026-08-26 — absent in `@keystatic/core@0.6.9`.*
+
+### 5. `@babel/plugin-transform-runtime` pinned without proven need
+
+`starter/base/package.json`
+
+Added during `vinext init` to break an npm dependency-resolution failure.
+Nothing in the tree depends on it (`npm ls` shows it as a leaf), and with the
+current lockfile it can be removed and `npm run build:vinext` still passes.
+
+That is not the case it was added for. The failure was resolution *from
+scratch*, and re-testing that means installing with no lockfile, which could not
+be completed on 2026-08-26 — the attempt died on a registry network error, not
+on a dependency conflict. Kept rather than removed: inconclusive evidence is not
+grounds for dropping a deliberate pin.
+
+**Risk of waiting:** low. One unused dev-only package. But brief 01 §7 says
+nothing sits in the template speculatively, so it either earns its place or it
+goes.
+
+```bash
+mkdir /tmp/babel-pin && cp starter/base/package.json /tmp/babel-pin/
+# remove @babel/plugin-transform-runtime from the copy, then:
+cd /tmp/babel-pin && npm install     # resolves? the pin can go
+```
+
+*Last checked: 2026-08-26 — test inconclusive (network).*
+
+### 6. Route guard handles static routes only
 
 `starter/base/scripts/check-routes.mjs`
 
@@ -124,7 +177,7 @@ If more than one project writes the same extension, it belongs in the template.
 
 *Last checked: 2026-08-26 — no dynamic routes exist yet.*
 
-### 5. `block:add` answers the shadcn overwrite prompt through stdin
+### 7. `block:add` answers the shadcn overwrite prompt through stdin
 
 `starter/base/scripts/add-block.mjs`
 
@@ -172,6 +225,8 @@ upgrades as deliberate platform maintenance. This is what `starter/base` is on.
 | `@keystatic/core` | 0.6.9 | 0.6.9 | current |
 | `@keystatic/next` | 5.0.5 | 5.0.5 | current |
 | `shadcn` | 4.19.0 | 4.19.0 | current; pinned so `block:add` cannot drift |
+| `vinext` | ^1.0.0-beta.8 | 1.0.0-beta.8 | under validation — open item 3; caret, not pinned |
+| `wrangler` | ^4.126.0 | 4.126.0 | adapter tooling, not application code |
 
 *Table verified 2026-08-26. It goes stale on its own — re-run
 `npm view <pkg> version` rather than trusting it.*

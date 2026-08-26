@@ -17,6 +17,16 @@ import nextTypeScript from "eslint-config-next/typescript";
  * eslint-config-next@16.3.3. Revisit when Next ships a config that supports 10.
  */
 export default defineConfig([
+  /*
+   * Build output. `.next/` is ignored by ESLint's own defaults; `dist/` is not,
+   * because it is the Vite/Worker build directory rather than a Next one. It
+   * holds bundled third-party code, so linting it produces thousands of
+   * findings nobody can act on and turns `verify` red for no reason.
+   */
+  {
+    ignores: ["dist/**"],
+  },
+
   ...nextCoreWebVitals,
   ...nextTypeScript,
 

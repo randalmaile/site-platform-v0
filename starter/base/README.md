@@ -42,6 +42,14 @@ finished gets kept by default, and that is the failure this neutrality prevents.
 | `npm run verify` | The above plus a production build — the completion gate |
 | `npm run block:add -- @shadcnblocks/<name>` | Install a registry block into the right directory |
 
+Cloudflare Workers deployment through vinext passed the base's end-to-end
+acceptance test. It is still not the development workflow: `npm run dev` stays
+standard Next.js. `npm run build:vinext` and `npm run start:vinext` build and
+run the Worker locally; `npm run deploy:vinext` deploys it. Read
+[`docs/deployment/status.md`](docs/deployment/status.md) before using any of
+them—the Worker reads content from GitHub rather than from disk, and deployed
+Keystatic requires a GitHub App plus the documented environment variables.
+
 ## Layout
 
 ```text

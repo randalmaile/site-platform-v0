@@ -80,6 +80,15 @@ and adding one is an architectural decision, not a feature.
 **V0 content model.** One site singleton, five fields. Collections arrive with
 the capabilities that need them.
 
+**Two storage backends, one boundary.** `reader.ts` chooses at startup from
+`CONTENT_SOURCE`: unset or `local` reads `content/` from disk, `github` fetches
+from the GitHub API at request time. Nothing above the boundary changes — the
+domain modules call the same reader and callers still receive plain typed
+values. The GitHub reader exists because a Cloudflare Worker has no repository
+filesystem, so `process.cwd()` resolves to nothing readable and every read
+returns `null`. See [`../deployment/status.md`](../deployment/status.md) for the
+variables and how they reach a Worker.
+
 ---
 
 ## Boundary 3 — component ownership
@@ -108,9 +117,15 @@ Nothing lives loose at the root of `src/components/`.
 ## Boundary 4 — deployment
 
 This is a standard Next.js application. Cloudflare Workers is the intended
-target, but no adapter is configured yet and no provider API appears in content,
+target, and vinext has passed the base's deployed homepage and Keystatic
+GitHub-mode editing acceptance tests. No provider API appears in content,
 components, routing or domain logic. Changing deployment provider should be a
 change to configuration, not to the app.
+
+The one place the runtime shows through is `CONTENT_SOURCE`, and it shows
+through as an environment variable rather than an import: `reader.ts` knows that
+*some* runtimes cannot read the repository from disk, not that Cloudflare is
+one of them.
 
 See [`../deployment/status.md`](../deployment/status.md).
 
