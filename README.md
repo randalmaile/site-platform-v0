@@ -16,13 +16,15 @@ Milestone 1 is complete:
   been added.
 
 Start with [`starter/base/README.md`](starter/base/README.md) to run or extend
-the application.
+the application. To make a new website from this platform and put it on GitHub,
+follow [`docs/create-new-site.md`](docs/create-new-site.md).
 
 ## Repository map
 
 | Path | Purpose |
 | --- | --- |
 | [`briefs/`](briefs/) | Durable platform contracts and their source-of-truth rules |
+| [`docs/`](docs/) | Platform usage guides, including [creating a new site](docs/create-new-site.md) |
 | [`starter/base/`](starter/base/) | Executable neutral template inherited by generated sites |
 | [`prompts/`](prompts/) | Temporary handoffs for unfinished milestones; currently none |
 | [`MAINTENANCE.md`](MAINTENANCE.md) | Open pins, deferrals, and evidence-based retest triggers |
