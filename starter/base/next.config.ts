@@ -1,13 +1,15 @@
 import type { NextConfig } from "next";
 
 /**
- * Deliberately empty.
+ * Deliberately minimal.
  *
- * The base is a standard Next.js application. No redirects, no remote image
- * hosts, no deployment adapter — every one of those is a project decision or a
- * deployment-boundary concern (see `briefs/10-deployment.md`), and adding one
- * here would make it something every generated site inherits.
+ * Keystatic's local GitHub App setup redirects through `127.0.0.1`, while
+ * Next's development server starts on `localhost`. Next blocks that dev-only
+ * cross-origin asset request unless the callback host is explicitly allowed.
+ * This setting affects development only.
  */
-const nextConfig: NextConfig = {};
+const nextConfig: NextConfig = {
+  allowedDevOrigins: ["127.0.0.1"],
+};
 
 export default nextConfig;

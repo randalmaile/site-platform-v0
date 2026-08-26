@@ -1,25 +1,21 @@
 # Deployment status
 
-**No deployment adapter is adopted.** `npm run dev`, `npm run build` and
-`npm run verify` are still standard Next.js and are unaffected by anything on
-this page.
-
-vinext has now been validated further than a compatibility score: the base
-builds for Cloudflare Workers, runs in a local Worker, and serves its homepage
-with content read from GitHub at request time. What is *not* proven is the
-editing half — see [Acceptance test](#acceptance-test--partially-run).
+**vinext is the V0 base's proven Cloudflare adapter.** On 26 August 2026 the
+base passed the full deployed Keystatic GitHub-mode editing flow. `npm run dev`,
+`npm run build` and `npm run verify` remain standard Next.js and are unaffected
+by the deployment adapter.
 
 ## Current state
 
 | | |
 | --- | --- |
-| Adapter | vinext 1.0.0-beta.8 — under validation, not adopted |
+| Adapter | vinext 1.0.0-beta.8 — end-to-end validation passed |
 | `npm run dev` | standard Next.js, filesystem content |
 | `npm run build` / `npm run verify` | standard Next.js, passing |
 | `npm run build:vinext` | passing |
 | `npm run start:vinext` | local Worker, `GET /` returns 200 |
 | Provider APIs in application code | none |
-| Keystatic storage | `local` — see [the admin limitation](#the-keystatic-admin-does-not-work-in-a-worker) |
+| Keystatic storage | local by default; GitHub when configured for deployment |
 
 ## Scripts
 
@@ -46,8 +42,9 @@ Worker-specific problem, not to replace Next's dev server.
 | `"type": "module"` in `package.json` | required by Vite; the compatibility check flagged its absence |
 | `@babel/plugin-transform-runtime` (dev) | pinned to break an npm resolution failure during `vinext init` — see `MAINTENANCE.md` |
 
-`vite.config.ts` and `wrangler.jsonc` are new and are the only adapter
-configuration. `next.config.ts` is untouched.
+`vite.config.ts` and `wrangler.jsonc` contain the adapter configuration.
+`next.config.ts` additionally allows `127.0.0.1` during development because the
+Keystatic GitHub App setup callback uses that host.
 
 `dist/` is the Vite build directory. ESLint's defaults ignore `.next/` but not
 `dist/`, so `eslint.config.mjs` ignores it explicitly — without that,
@@ -122,26 +119,31 @@ dynamic and renders it per request. That is the safe outcome while content comes
 from GitHub — a prerendered homepage would freeze content at build time and
 would need the GitHub variables available to the build as well.
 
-## The Keystatic admin does not work in a Worker
+## Keystatic storage in a Worker
 
-`/keystatic` returns 200 from the Worker and serves the admin bundle, but the
-base ships `storage: { kind: "local" }`, and local mode writes to the filesystem
-through `/api/keystatic`. There is no filesystem in a deployed Worker.
+The base defaults to local storage so `npm run dev` edits the checked-out
+`content/` directory without credentials. A deployed Worker must set
+`NEXT_PUBLIC_KEYSTATIC_GITHUB_REPO`; `keystatic.config.ts` then switches the
+admin to GitHub storage.
 
 **`wrangler dev` makes this look like it works.** Local mode reads
 `process.cwd()`, which under `wrangler dev` resolves to `dist/server/` — so
 `/api/keystatic/tree` returns a directory listing of the *build output*. It is a
 convincing-looking response to a request that cannot succeed in production.
 
-A deployed Worker must switch Keystatic to GitHub mode. That is unstarted work,
-not a formality: it needs a GitHub App, four more environment variables, and an
-OAuth callback on the deployed origin.
+GitHub mode needs a GitHub App, the four GitHub App variables documented in
+`.env.example`, and an OAuth callback on the deployed origin. If the application
+lives below the repository root, also set
+`NEXT_PUBLIC_KEYSTATIC_GITHUB_PATH_PREFIX`. Without that prefix Keystatic reads
+and writes the same-looking path at the repository root; the acceptance test
+first exposed this by creating `content/site.json` instead of updating
+`starter/base/content/site.json`.
 
 Note that Keystatic's GitHub *storage* (editing, OAuth, commits) and the GitHub
 *reader* (`CONTENT_SOURCE`) are separate mechanisms with separate credentials.
 Configuring one does not configure the other.
 
-## Acceptance test — partially run
+## Acceptance test — passed 26 August 2026
 
 A working homepage does not make an adapter supported. The editing workflow is
 what has to be proven, end to end (`briefs/10-deployment.md` §12,
@@ -155,23 +157,25 @@ what has to be proven, end to end (`briefs/10-deployment.md` §12,
 ✔ local Worker serves GET / as 200
 ✔ homepage renders real repository content through the GitHub reader
 ✔ local Keystatic filesystem editing still works in npm run dev
-□ Cloudflare Worker deploy succeeds
-□ public site renders correctly
-□ /keystatic loads in production
-□ GitHub login succeeds
-□ authorized editor can open content
-□ structured content can be edited
-□ Markdown content can be edited        (when enabled)
-□ image upload works                    (when enabled)
-□ save creates/updates repository content
-□ commit reaches GitHub
-□ deployment rebuild occurs
-□ updated content appears publicly
+✔ Cloudflare Worker deploy succeeds
+✔ public site renders correctly
+✔ /keystatic loads in production
+✔ GitHub login succeeds
+✔ authorized editor can open content
+✔ structured content can be edited
+— Markdown editing is not enabled in the neutral base
+— image upload is not enabled in the neutral base
+✔ save updates starter/base/content/site.json
+✔ commit reaches GitHub
+— no rebuild is required; the Worker reader fetches GitHub content per request
+✔ updated content appears publicly
+✔ temporary validation content was restored
 ```
 
-Everything below the line needs Cloudflare credentials and a configured
-Keystatic GitHub App. It is a human acceptance test. Do not record a result that
-was not observed.
+The deployed validation used `site-platform-base.randalmaile.workers.dev` and a
+GitHub App restricted to `randalmaile/site-platform-v0`. Project-specific
+routes, content types and dependencies still require their own compatibility
+and acceptance pass.
 
 ## vinext compatibility check
 
@@ -233,27 +237,21 @@ Workers and of Keystatic, and OpenNext would hit both identically. Only the
 Keep adapter configuration isolated. `npm run verify` must stay free of
 deployment, credentials and network access.
 
-## Switching Keystatic to GitHub mode
+## Configuring Keystatic GitHub mode
 
-Required for the editing workflow. Replace the storage block in
-`keystatic.config.ts`:
-
-```ts
-storage: {
-  kind: "github",
-  repo: { owner: "your-org", name: "your-repo" },
-},
-```
-
-Then set the variables documented in `.env.example`:
+`keystatic.config.ts` switches automatically when the variables documented in
+`.env.example` are present:
 
 ```text
+NEXT_PUBLIC_KEYSTATIC_GITHUB_REPO
+NEXT_PUBLIC_KEYSTATIC_GITHUB_PATH_PREFIX  # when the app is in a subdirectory
 KEYSTATIC_GITHUB_CLIENT_ID
 KEYSTATIC_GITHUB_CLIENT_SECRET
 KEYSTATIC_SECRET
 NEXT_PUBLIC_KEYSTATIC_GITHUB_APP_SLUG
 ```
 
-They belong in Cloudflare's secret configuration for the deployed environment —
-never in the repository. Editors need write access to the content repository;
-that is the intentional V0 tradeoff of Git-backed content.
+The repository, path prefix and App slug are build-time public configuration.
+The client secret and `KEYSTATIC_SECRET` belong in Cloudflare's encrypted
+secret configuration—never in the repository. Editors need write access to the
+content repository; that is the intentional V0 tradeoff of Git-backed content.

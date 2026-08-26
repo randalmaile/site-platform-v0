@@ -1,23 +1,42 @@
 import { config, fields, singleton } from "@keystatic/core";
 
+const githubRepo = process.env.NEXT_PUBLIC_KEYSTATIC_GITHUB_REPO;
+const githubPathPrefix =
+  process.env.NEXT_PUBLIC_KEYSTATIC_GITHUB_PATH_PREFIX;
+
+function getStorage() {
+  if (!githubRepo) {
+    return { kind: "local" } as const;
+  }
+
+  const parts = githubRepo.split("/");
+
+  if (parts.length !== 2 || !parts[0]?.trim() || !parts[1]?.trim()) {
+    throw new Error(
+      'NEXT_PUBLIC_KEYSTATIC_GITHUB_REPO must use the format "owner/repository".',
+    );
+  }
+
+  return {
+    kind: "github",
+    repo: { owner: parts[0], name: parts[1] },
+    ...(githubPathPrefix ? { pathPrefix: githubPathPrefix } : {}),
+  } as const;
+}
+
 /**
  * Keystatic configuration — schema and storage, nothing else.
  *
  * STORAGE
- * The base ships with `local`, so a fresh clone gets a working `/keystatic`
- * with no GitHub App, no credentials and no setup. It writes straight to
- * `content/` on disk.
+ * The base defaults to `local`, so a fresh clone gets a working `/keystatic`
+ * with no GitHub App, credentials or setup. It writes straight to `content/`
+ * on disk.
  *
  * GitHub mode is the intended *deployed* editing workflow
  * (briefs/06-keystatic.md §2): content is committed to the repository, reviewed
  * in pull requests, and picked up by the normal deployment. A project switches
- * by replacing the storage block below with its own repository and setting the
- * four KEYSTATIC_* variables listed in `.env.example`:
- *
- *   storage: {
- *     kind: "github",
- *     repo: { owner: "your-org", name: "your-repo" },
- *   },
+ * by setting `NEXT_PUBLIC_KEYSTATIC_GITHUB_REPO=owner/repository` and the GitHub
+ * App variables listed in `.env.example`.
  *
  * SCHEMA
  * One singleton, five fields. The base proves the boundary works; it does not
@@ -30,9 +49,7 @@ import { config, fields, singleton } from "@keystatic/core";
  * Optional means "genuinely optional content", not "flexible".
  */
 export default config({
-  storage: {
-    kind: "local",
-  },
+  storage: getStorage(),
 
   ui: {
     brand: { name: "Site content" },

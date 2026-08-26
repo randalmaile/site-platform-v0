@@ -117,8 +117,8 @@ Nothing lives loose at the root of `src/components/`.
 ## Boundary 4 — deployment
 
 This is a standard Next.js application. Cloudflare Workers is the intended
-target, and vinext has been validated far enough to serve the base from a local
-Worker, but no adapter is adopted yet and no provider API appears in content,
+target, and vinext has passed the base's deployed homepage and Keystatic
+GitHub-mode editing acceptance tests. No provider API appears in content,
 components, routing or domain logic. Changing deployment provider should be a
 change to configuration, not to the app.
 

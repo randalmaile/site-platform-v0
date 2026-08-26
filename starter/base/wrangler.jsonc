@@ -1,6 +1,7 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "site-platform-base",
+  "account_id": "1b3cf2cacb970d66cb800b58d1e6c6e8",
   "compatibility_date": "2026-08-26",
   "compatibility_flags": [
     "nodejs_compat"

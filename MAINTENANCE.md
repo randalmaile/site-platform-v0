@@ -78,24 +78,19 @@ cd starter/base && npm i -D typescript@7 && npm run verify
 
 *Last checked: 2026-08-26 — not attempted, deferred by choice.*
 
-### 3. No deployment adapter adopted — vinext validated to the public site only
+### 3. vinext is proven for the base but remains a beta dependency
 
 `starter/base/docs/deployment/status.md` holds the detail.
 
-vinext 1.0.0-beta.8 now builds the base, runs it in a local Cloudflare Worker,
-and serves `GET /` as 200 with content read from GitHub at request time. Three
-runtime failures were found and fixed getting there; none of them was predicted
-by `npx vinext check`, and only one was vinext's own.
+vinext 1.0.0-beta.8 builds and deploys the base, serves repository content from
+GitHub, and passed the full deployed Keystatic GitHub-mode workflow: OAuth,
+content loading, save, GitHub commit and live public rendering. It is the proven
+V0 default for this base. The dependency is still a beta and project-specific
+features can introduce compatibility gaps that the neutral base does not cover.
 
-**Why that is still not enough to adopt it.** Brief 10 §11 makes the Keystatic
-editing workflow the deciding factor, and none of it has been exercised. The
-base ships `storage: { kind: "local" }`, which writes to a filesystem a deployed
-Worker does not have. `wrangler dev` disguises this — local mode resolves
-`process.cwd()` to `dist/server/` and returns a listing of the build output — so
-the admin looks alive locally while being unusable in production.
-
-**Blocked on:** Cloudflare credentials and a configured Keystatic GitHub App.
-It is a human acceptance test.
+**Trigger:** a vinext upgrade, a Next.js upgrade, or a generated project adding
+material routes/dependencies. Re-run the compatibility check and full deployed
+acceptance test; use OpenNext only if that evidence reveals a critical gap.
 
 ```bash
 cd starter/base && npm run build:vinext && npm run start:vinext   # then GET /
@@ -105,7 +100,7 @@ OpenNext remains the documented fallback, but nothing found so far argues for
 it: the two expensive failures belong to Workers and to Keystatic, and OpenNext
 would hit both identically.
 
-*Last checked: 2026-08-26 — public site passes, editing workflow unstarted.*
+*Last checked: 2026-08-26 — full deployed editing workflow passed.*
 
 ### 4. Keystatic's GitHub reader sends no `User-Agent`
 
