@@ -42,6 +42,13 @@ finished gets kept by default, and that is the failure this neutrality prevents.
 | `npm run verify` | The above plus a production build — the completion gate |
 | `npm run block:add -- @shadcnblocks/<name>` | Install a registry block into the right directory |
 
+Cloudflare Workers support is under validation and is not the development
+workflow. `npm run build:vinext` and `npm run start:vinext` build and run the
+Worker locally; `npm run deploy:vinext` deploys it. Read
+[`docs/deployment/status.md`](docs/deployment/status.md) before using any of
+them — the Worker reads content from GitHub rather than from disk, and the
+Keystatic admin does not work there yet.
+
 ## Layout
 
 ```text

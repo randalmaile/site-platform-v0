@@ -28,6 +28,11 @@ and nothing lints during the build, so this is the only thing running ESLint.
 
 **`typecheck`** — `tsc --noEmit` in strict mode.
 
+One failure here is not yours to fix in code: errors in `.next/types/validator.ts`
+about missing `AppRoutes` / `LayoutRoutes` / `ParamMap` mean a vinext build left
+its own `routes.d.ts` in `.next/types/`. Run `npm run clean:next-types` and
+verify again — `docs/deployment/status.md` explains why the two builds collide.
+
 **`check:routes`** — compares every `page.tsx` under `src/app/(site)` with
 `PUBLIC_ROUTES` in `src/lib/routes.ts`, in both directions. A page with no
 registry entry never reaches the sitemap; a registry entry with no page puts a
