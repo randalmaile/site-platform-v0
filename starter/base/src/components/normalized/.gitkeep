@@ -1,0 +1,9 @@
+Project-owned components adapted from registry source live here.
+
+Empty on purpose. The base ships no finished sections — no Hero, Stats, Team,
+Gallery or CTA (brief 05 §22). Those enter when a real design requirement
+justifies them.
+
+This is not a folder for miscellaneous project components: it means "adapted
+external source". Components written from scratch belong in `layout/` or in a
+domain folder.

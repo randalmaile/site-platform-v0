@@ -27,6 +27,7 @@ starter/base/
 │   └── rules/
 │       ├── architecture.md
 │       ├── components.md
+│       ├── content.md
 │       ├── design-system.md
 │       └── scope.md
 │
@@ -41,10 +42,12 @@ starter/base/
 │   │   └── tokens.md
 │   ├── accessibility/
 │   │   └── conventions.md
-│   └── workflows/
-│       ├── add-page.md
-│       ├── add-component.md
-│       └── verification.md
+│   ├── workflows/
+│   │   ├── add-page.md
+│   │   ├── add-component.md
+│   │   └── verification.md
+│   └── deployment/
+│       └── status.md
 │
 ├── public/
 │
@@ -99,6 +102,7 @@ starter/base/
 ├── .env.example
 ├── .gitignore
 ├── .nvmrc
+├── AGENTS.md
 ├── CLAUDE.md
 ├── README.md
 ├── components.json
@@ -306,6 +310,15 @@ Documents accessibility conventions and later testing procedures.
 
 Short operational instructions for recurring development tasks.
 
+### `docs/deployment/`
+
+Records the selected adapter, the environment it requires, and the acceptance
+steps still outstanding. Required by `10-deployment.md` §18.
+
+The base ships `status.md` with no adapter configured — the compatibility
+evidence and the unticked acceptance checklist. A project fills it in when it
+selects an adapter.
+
 Do not duplicate the same policy in several docs. Prefer one canonical document plus links/references.
 
 ## 13. `.claude/rules/`
@@ -316,12 +329,17 @@ Rules should be operational and concise.
 
 Long explanations belong in `docs/`; Claude rules should point to them rather than copy them wholesale.
 
-Suggested V0 files:
+V0 files:
 
 - `architecture.md`
 - `components.md`
+- `content.md`
 - `design-system.md`
 - `scope.md`
+
+This matches the set in `11-ai-governance.md` §24. The content boundary is a
+platform invariant, so it gets its own rule file rather than being folded into
+`architecture.md`.
 
 ## 14. `scripts/`
 

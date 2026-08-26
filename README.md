@@ -46,4 +46,5 @@ Milestone 1 architecture briefs are complete:
 - 10 Deployment
 - 11 AI Governance
 
-Next step: implement and validate `starter/base` using `prompts/create-base-starter.md`.
+Milestone 1 is implemented: the neutral base application lives at [`starter/base/`](starter/base/).
+Start there with `starter/base/README.md`.

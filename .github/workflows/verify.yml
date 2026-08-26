@@ -1,0 +1,33 @@
+# Platform CI — runs the starter's own quality gate from the platform repository.
+#
+# GitHub Actions only reads workflows at the repository root, so this file is what
+# actually fires here. `starter/base/.github/workflows/verify.yml` is the template's
+# copy: it does nothing in this repo and becomes the root workflow once the starter
+# is cloned as its own project.
+#
+# Same gate as local development. CI must not invent a standard of its own.
+name: verify
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: starter/base
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: starter/base/.nvmrc
+          cache: npm
+          cache-dependency-path: starter/base/package-lock.json
+
+      - run: npm ci
+
+      - run: npm run verify
