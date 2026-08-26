@@ -1,0 +1,4 @@
+shadcn/ui primitives land here, installed on demand via `npm run block:add -- @shadcn/<name>`.
+
+Empty on purpose. The base preinstalls no primitives — brief 05 §23. Install
+one when a component actually needs it, not in advance.

@@ -502,6 +502,22 @@ Profile-specific AI rules may extend this file.
 
 For the student-organization profile, the student-ownership rules must be included.
 
+## `CLAUDE.md` vs `AGENTS.md`
+
+`CLAUDE.md` is the authored file. It is the one this brief governs, and the one
+to edit.
+
+`AGENTS.md` is vendor-managed. `next dev` injects a Next.js agent-rules block
+into whichever of the two files it finds, and rewrites it on every run — so the
+base ships an `AGENTS.md` to absorb that, which keeps `CLAUDE.md` stable and
+hand-authored. `AGENTS.md` holds the managed block plus a pointer to
+`CLAUDE.md`, and nothing else.
+
+Do not consolidate the two files, and do not move project rules into
+`AGENTS.md`. Next.js will only replace the content between its own markers, so
+anything else placed there survives — but it becomes a second place to look for
+rules, which is the problem this split exists to avoid.
+
 ---
 
 # 24. `.claude/rules/`

@@ -1,0 +1,28 @@
+# The same quality gate that runs locally. CI must not invent a standard of
+# its own — if `npm run verify` passes on your machine, it passes here.
+#
+# This file becomes the repository's root workflow once the starter is cloned
+# as its own project. Inside the platform repository it is inert; the workflow
+# that actually fires there is at the platform root and sets a working
+# directory.
+name: verify
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run verify

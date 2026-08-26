@@ -1,0 +1,138 @@
+@import "tailwindcss";
+
+/* ============================================================================
+   Theme tokens — the source of truth for this site's visual system.
+
+   This file is where a project gets rebranded. Change the values in :root and
+   .dark below and the whole site follows; nothing should hard-code a colour,
+   radius, container width or font-family anywhere else.
+   Rationale and the full token reference: docs/design-system/tokens.md
+
+   THE BASE IS DELIBERATELY NEUTRAL. Greys, system fonts, a small radius, no
+   accent, no gradient. That is not an oversight to be tidied up later — the
+   palette, the typefaces and the personality are the project owner's decisions
+   (briefs/04-design-system.md §16). A starter that looks finished gets kept by
+   default, which is the failure this neutrality exists to prevent.
+
+   ADD A TOKEN when a semantic role genuinely recurs. Do not add one per
+   component, and do not add a shade ramp "for later".
+   ============================================================================ */
+
+@custom-variant dark (&:is(.dark *));
+
+/* ----------------------------------------------------------------------------
+   Tailwind theme mapping.
+
+   `@theme inline` is what turns a CSS variable into a real utility class:
+   --color-background here is what makes `bg-background` exist. The variables
+   it points at are defined in :root below, so there is exactly one place to
+   edit a value.
+   ---------------------------------------------------------------------------- */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --radius-sm: calc(var(--radius) - 2px);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 2px);
+
+  /* Type. `--font-body` and `--font-display` are the semantic names the design
+     brief specifies; `font-sans` / `font-serif` are mapped onto them so
+     Tailwind's defaults and any shadcn/ui primitive installed later resolve to
+     the project's fonts rather than to a second, competing definition. */
+  --font-sans: var(--font-body);
+  --font-serif: var(--font-display);
+}
+
+:root {
+  /* --- Surfaces ------------------------------------------------------- */
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.21 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.21 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.48 0 0);
+  --border: oklch(0.92 0 0);
+  --input: oklch(0.92 0 0);
+  --ring: oklch(0.55 0 0);
+
+  /* --- Interaction / emphasis ------------------------------------------
+     `--primary` is a dark neutral on purpose. It is a working emphasis role,
+     not a brand colour, and picking a brand colour here is what would make
+     every generated site look related. */
+  --primary: oklch(0.21 0 0);
+  --primary-foreground: oklch(0.98 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.21 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.21 0 0);
+
+  /* --- Structure -------------------------------------------------------
+     One vertical-rhythm system for the whole site. `Section` reads these;
+     individual sections do not invent their own padding. */
+  --radius: 0.5rem;
+  --container-max: 72rem;
+  --section-gap: 4rem;
+  --section-padding: 3rem;
+
+  /* --- Typography ------------------------------------------------------
+     System stacks. Choosing typefaces is a project decision: load them
+     centrally (next/font in src/app/layout.tsx) and point these two variables
+     at them. Components must never declare a font-family. */
+  --font-body: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  --font-display: var(--font-body);
+}
+
+.dark {
+  --background: oklch(0.21 0 0);
+  --foreground: oklch(0.98 0 0);
+  --card: oklch(0.27 0 0);
+  --card-foreground: oklch(0.98 0 0);
+  --muted: oklch(0.27 0 0);
+  --muted-foreground: oklch(0.71 0 0);
+  --border: oklch(1 0 0 / 12%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.65 0 0);
+
+  --primary: oklch(0.98 0 0);
+  --primary-foreground: oklch(0.21 0 0);
+  --secondary: oklch(0.32 0 0);
+  --secondary-foreground: oklch(0.98 0 0);
+  --accent: oklch(0.32 0 0);
+  --accent-foreground: oklch(0.98 0 0);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Focus is a platform invariant, not a per-component decision. Every
+     focusable element gets a visible ring by default, so a component has to go
+     out of its way to become keyboard-invisible.
+     briefs/08-accessibility.md §3. */
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+}

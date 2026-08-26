@@ -1,0 +1,40 @@
+{
+  "name": "site-platform-base",
+  "version": "0.0.0",
+  "private": true,
+  "engines": {
+    "node": ">=22.15 <23"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "check:routes": "node --no-warnings --experimental-strip-types scripts/check-routes.mjs",
+    "verify:fast": "npm run lint && npm run typecheck && npm run check:routes",
+    "verify": "npm run verify:fast && npm run build",
+    "block:add": "node scripts/add-block.mjs"
+  },
+  "dependencies": {
+    "@keystatic/core": "0.6.9",
+    "@keystatic/next": "5.0.5",
+    "clsx": "2.1.1",
+    "next": "16.3.3",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "server-only": "0.0.1",
+    "tailwind-merge": "3.6.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "4.3.3",
+    "@types/node": "22.20.1",
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.5",
+    "eslint": "9.39.5",
+    "eslint-config-next": "16.3.3",
+    "shadcn": "4.19.0",
+    "tailwindcss": "4.3.3",
+    "typescript": "5.9.3"
+  }
+}

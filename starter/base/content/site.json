@@ -1,0 +1,7 @@
+{
+  "name": "Site Platform Base",
+  "shortName": "Base",
+  "description": "The neutral starting point for a generated site. Nothing here describes a real organisation yet.",
+  "defaultSeoTitle": "Site Platform Base",
+  "defaultSeoDescription": "A neutral Next.js starter with routing, content and design-token infrastructure already wired up."
+}

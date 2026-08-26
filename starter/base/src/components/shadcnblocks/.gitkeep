@@ -1,0 +1,5 @@
+Pristine Shadcnblocks registry source lands here, via `npm run block:add`.
+
+Empty on purpose. Never edit a file in this directory: `block:add` overwrites
+it on update, and it is the clean upstream baseline a normalized component is
+compared against. Copy into `normalized/` before changing anything.
